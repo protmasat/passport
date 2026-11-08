@@ -21,27 +21,33 @@ const passportSchema = new mongoose.Schema(
     passportType: {
       type: String,
       required: true,
+      uppercase: true,
     },
     stateCode: {
       type: String,
       required: true,
+      uppercase: true,
     },
     surname: {
       type: String,
       required: true,
+      uppercase: true,
     },
     name: {
       type: String,
       required: true,
+      uppercase: true,
     },
     nationality: {
       type: String,
       enum: countries,
       required: true,
+      // uppercase: true,
     },
     placeOfBirth: {
       type: String,
       required: true,
+      uppercase: true,
     },
     sex: {
       type: String,
@@ -59,10 +65,12 @@ const passportSchema = new mongoose.Schema(
     placeOfBirth: {
       type: String,
       required: true,
+      uppercase: true,
     },
     issuingAuthority: {
       type: String,
       required: true,
+      uppercase: true,
     },
     electronicallPrintedSignature: {
       type: String,

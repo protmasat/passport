@@ -14,6 +14,12 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Passport is running smooth" });
 });
 
+app.use("/api/v1/healthy", (req, res) => {
+  res.status(200).json({
+    message: "System is healthy",
+  });
+});
+
 app.use("/api/v1/passports", passportRoutes);
 
 app.use("/", (req, res) => {
@@ -22,7 +28,9 @@ app.use("/", (req, res) => {
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send("Something broke!");
+  res.status(500).json({
+    message: "Internal server error!",
+  });
 });
 
 app.listen(PORT, () => {
