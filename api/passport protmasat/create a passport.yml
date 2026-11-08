@@ -1,0 +1,33 @@
+info:
+  name: create a passport
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:3400/api/v1/passports
+  body:
+    type: json
+    data: |-
+      {
+        "passportType": "P",
+        "passportNumber": "AB1234567",
+        "surname": "MDUDU",
+        "name": "NGATELE",
+        "nationality": "Tanzania",
+        "dateOfBirth": "1995-05-20",
+        "sex": "male",
+        "issueDate": "2024-01-15",
+        "expiryDate": "2034-01-14",
+        "placeOfBirth": "Zanzibar",
+        "issuingAuthority": "Immigration Departmen",
+        "stateCode": "WWE234..",
+        "electronicallPrintedSignature": "WWWW...1"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
