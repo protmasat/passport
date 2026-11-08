@@ -14,9 +14,6 @@ const ValidatePassport = (req, res, next) => {
     "electronicallPrintedSignature",
   ];
 
-  console.log(req.headers["content-type"]);
-  console.log(req.body);
-
   const missingFields = requiredFields.filter((field) => !req.body[field]);
 
   if (missingFields.length > 0) {

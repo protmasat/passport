@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:3400/api/v1/passports/2333
+  url: http://localhost:3400/api/v1/passports/6af0432d2e11cbbf8f49d2a2
   auth: inherit
 
 settings:

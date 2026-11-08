@@ -1,0 +1,22 @@
+info:
+  name: update passport
+  type: http
+  seq: 6
+
+http:
+  method: PUT
+  url: http://localhost:3400/api/v1/passports/6aeda38e4d75e28831968e2d
+  body:
+    type: json
+    data: |-
+      {
+        "name": "NJOX",
+        "surname": "NYAGAWA"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,8 +1,7 @@
 // CREATE
-
+const mongoose = require("mongoose");
 const PassportModel = require("../models/passport");
 
-// create passport
 const CreatePassport = async (req, res) => {
   try {
     const {
@@ -20,7 +19,17 @@ const CreatePassport = async (req, res) => {
       electronicallPrintedSignature,
     } = req.body;
 
-    const newPassport = PassportModel.create({
+    const validSex = ["male", "female"];
+
+    if (!validSex.includes(sex)) {
+      return res.status(400).json({
+        sucess: true,
+        message: "Not valid sex",
+        data: {},
+      });
+    }
+
+    const newPassport = await PassportModel.create({
       passportType,
       stateCode,
       surname,
@@ -38,7 +47,7 @@ const CreatePassport = async (req, res) => {
     if (!newPassport) {
       return res
         .status(404)
-        .json({ sucess: false, data: {}, message: "New passport not found!" });
+        .json({ sucess: false, message: "Passport not found!", data: {} });
     }
 
     res
@@ -46,24 +55,31 @@ const CreatePassport = async (req, res) => {
       .json({ sucess: true, message: "New passport added", data: newPassport });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ sucess: false, message: "Internal server error", data: {} });
   }
 };
 
-// READ
 const GetPassports = async (req, res) => {
   try {
     const passports = await PassportModel.find().sort({ createdAt: -1 });
 
     if (passports.length === 0) {
       return res.status(200).json({
+        sucess: true,
         message: "No passport found",
+        data: {},
       });
     }
 
-    res.status(200).json({ message: "Passports retrieved", data: passports });
+    res
+      .status(200)
+      .json({ sucess: true, message: "Passports retrieved", data: passports });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ sucess: false, message: "Internal server error", data: {} });
   }
 };
 
@@ -72,26 +88,37 @@ const GetPassport = async (req, res) => {
     const { id } = req.params;
 
     if (!id) {
-      return res
-        .status(400)
-        .json({ sucess: falase, message: "Enter a valid passport" });
+      return res.status(404).json({
+        message: "Enter valid passport",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        message: "Passport not found!",
+      });
     }
 
     const passport = await PassportModel.findById(id);
 
     if (!passport) {
       return res.status(200).json({
+        sucess: true,
         message: "Passport not found",
+        data: {},
       });
     }
 
-    res.status(200).json({ message: "Passports retrieved", data: passport });
+    res
+      .status(200)
+      .json({ sucess: true, message: "Passport retrieved", data: passport });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ sucess: false, message: "Internal server error", data: {} });
   }
 };
 
-// UPDATE
 const UpdatePassport = async (req, res) => {
   try {
     const { id } = req.params;
@@ -99,31 +126,40 @@ const UpdatePassport = async (req, res) => {
     if (!id) {
       return res
         .status(400)
-        .json({ sucess: falase, message: "Enter a valid passport" });
+        .json({ sucess: false, message: "Enter a valid passport", data: {} });
     }
 
-    const passport = await PassportModel.findByIdAndUpdate(
-      id,
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        sucess: false,
+        message: "Passport not found!",
+        data: {},
+      });
+    }
+
+    console.log(req.body);
+
+    const updatedPassport = await PassportModel.findOneAndUpdate(
+      { _id: id },
+      req.body,
       {
         new: true,
         runValidators: true,
       },
-      req.body,
     );
 
-    if (!passport) {
-      return res.status(200).json({
-        message: "Passport not found",
-      });
-    }
-
-    res.status(200).json({ message: "Passports retrieved", data: passport });
+    res.status(200).json({
+      sucess: true,
+      message: "Passport updated",
+      data: updatedPassport,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ sucess: false, message: "Internal server error", data: {} });
   }
 };
 
-// DELETE
 const DeletePassport = async (req, res) => {
   try {
     const { id } = req.params;
@@ -131,20 +167,32 @@ const DeletePassport = async (req, res) => {
     if (!id) {
       return res
         .status(400)
-        .json({ sucess: falase, message: "Enter a valid passport" });
+        .json({ sucess: false, message: "Enter a valid passport", data: {} });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        sucess: false,
+        message: "Passport not found!",
+        data: {},
+      });
     }
 
     const passport = await PassportModel.findByIdAndDelete(id);
 
     if (!passport) {
-      return res.status(200).json({
-        message: "Passport not found",
-      });
+      return res
+        .status(200)
+        .json({ sucess: true, message: "Passport not found", data: {} });
     }
 
-    res.status(200).json({ message: "Passports deleted", data: passport });
+    res
+      .status(200)
+      .json({ sucess: true, message: "Passport deleted", data: passport });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ sucess: false, message: "Internal server error", data: {} });
   }
 };
 

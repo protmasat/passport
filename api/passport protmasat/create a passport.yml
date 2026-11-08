@@ -10,19 +10,18 @@ http:
     type: json
     data: |-
       {
-        "passportType": "P",
-        "passportNumber": "AB1234567",
-        "surname": "MDUDU",
-        "name": "NGATELE",
-        "nationality": "Tanzania",
+        "passportType": "ORDINARY",
+        "stateCode": "TZ",
+        "surname": "NYAGAWA",
+        "name": "JOHN",
+        "nationality": "TANZANIA",
         "dateOfBirth": "1995-05-20",
         "sex": "male",
-        "issueDate": "2024-01-15",
-        "expiryDate": "2034-01-14",
-        "placeOfBirth": "Zanzibar",
-        "issuingAuthority": "Immigration Departmen",
-        "stateCode": "WWE234..",
-        "electronicallPrintedSignature": "WWWW...1"
+        "issueDate": "2025-01-15",
+        "expiryDate": "2035-01-14",
+        "placeOfBirth": "ZANZIBAR",
+        "issuingAuthority": "IMMIGRATION DEPARTMENT",
+        "electronicallPrintedSignature": "AUTHORIZED SIGNATORY"
       }
   auth: inherit
 
