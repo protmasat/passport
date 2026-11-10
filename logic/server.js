@@ -1,12 +1,33 @@
 const express = require("express");
+
+const path = require("path");
+const fs = require("fs");
+const YAML = require("yaml");
+const swaggerUi = require("swagger-ui-express");
+const OpenApiValidator = require("express-openapi-validator");
+
+const specPath = path.join(__dirname, "docs", "openapi.yaml");
+const spec = YAML.parse(fs.readFileSync(specPath, "utf8"));
+
 const dotenv = require("dotenv").config();
 const passportRoutes = require("./routes/passport");
 const ConnectDB = require("./config/DB");
+const userRouter = require("./routes/user");
 const app = express();
 
 app.disable("x-powered-by");
 
 const PORT = process.env.PORT || 3400;
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec: specPath,
+    validateRequests: true,
+    ignoreUndocumented: true,
+  }),
+);
 
 app.use(express.json());
 
@@ -21,6 +42,7 @@ app.use("/api/v1/healthy", (req, res) => {
 });
 
 app.use("/api/v1/passports", passportRoutes);
+app.use("/api/v1/auth", userRouter);
 
 app.use("/", (req, res) => {
   res.status(404).json({ message: "Invalid path" });

@@ -15,6 +15,16 @@ const ValidateId = require("../middleware/ValidateId");
 const ValidatePassport = require("../middleware/ValidatePassport");
 
 // create passport
+
+/**
+ * @swagger
+ * /api/v1/passports/:
+ *  post:
+ *      summary: create passport
+ * responses:
+ *      201:
+ *        description:
+ */
 passportRoutes.post("/", RequireBody, ValidatePassport, CreatePassport);
 
 // read passports

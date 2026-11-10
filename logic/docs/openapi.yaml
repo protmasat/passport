@@ -1,0 +1,60 @@
+# docs/openapi.yaml
+openapi: 3.0.0
+info:
+  title: Passports API
+  version: 1.0.0
+
+tags:
+  - name: Auth
+    description: Login and authentication
+  - name: Passports
+    description: Passport management
+
+paths:
+  /api/v1/passports:
+    get:
+      summary: List all passports
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Create a passport
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/passports/{id}:
+    put:
+      summary: Update a passport
+      responses:
+        "200":
+          description: Updated
+    delete:
+      summary: Delete a passport
+      responses:
+        "204":
+          description: Deleted
+
+  /api/v1/auth/logout:
+    post:
+      summary: Log in
+      responses:
+        "200":
+          description: OK
+
+  /api/v1/register:
+    post:
+      summary: register
+      responses:
+        "201":
+          description: Ok
+
+  /api/v1/auth/login:
+    post:
+      summary: Login
+      responses:
+        "200":
+          description: Ok
+
+# auth user: login, register,
+# admin: login, register

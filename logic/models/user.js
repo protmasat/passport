@@ -6,12 +6,16 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
       unique: true,
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please provide a valid email address",
+      ],
     },
     password: {
       type: String,
       required: true,
     },
-    Fullname: {
+    fullname: {
       type: String,
       required: true,
     },
@@ -22,7 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     verificationCode: {
       type: Number,
-      default: Math.random() * 1000,
+      default: () => Math.floor(Math.random() * 1000000),
     },
     role: {
       type: String,
@@ -36,7 +40,7 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-const UserModel = mongoose.model("User", UserSchema);
+const UserModel = mongoose.model("User", userSchema);
 module.exports = UserModel;
 
 // VALIDATE EMAIL:
