@@ -43,6 +43,8 @@ app.use("/api/v1/healthy", (req, res) => {
 
 app.use("/api/v1/passports", passportRoutes);
 app.use("/api/v1/auth", userRouter);
+// app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/contacts");
 
 app.use("/", (req, res) => {
   res.status(404).json({ message: "Invalid path" });

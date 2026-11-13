@@ -1,5 +1,7 @@
 FROM node:24.16.0-alpine
 
+RUN addgroup APP/ APP & adduser -S -P passportproject
+
 WORKDIR /app
 
 COPY . .

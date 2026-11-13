@@ -1,9 +1,10 @@
 const UserModel = require("../models/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const Register = async (req, res) => {
   try {
-    const { email, password, fullname } = req.body;
+    const { email, password, fullname, role } = req.body;
 
     if (!email) {
       return res.status(400).json({ message: "Email required" });
@@ -17,38 +18,110 @@ const Register = async (req, res) => {
       return res.status(400).json({ message: "Fullname required" });
     }
 
-    const VALID_ROLES = ["admin", "user"];
+    const existingUser = await UserModel.findOne({ email });
 
-    if (!VALID_ROLES.includes(role)) {
-      return res.status(400).json({ message: "Valid role is required." });
+    if (existingUser) {
+      return res.status(400).json({ message: "Try a different email!" });
     }
 
-    const encyptedPassword = await bcrypt.hash(password, 10);
+    const validRoles = ["admin", "user"];
+    const userRole = role || "user";
 
-    const isValidEmail = await UserModel.findOne({ email });
-
-    if (isValidEmail) {
-      return res.status(400).json({ message: "Try using a diffferent email" });
+    if (!validRoles.includes(userRole)) {
+      return res.status(400).json({ message: "Invalid role!" });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await UserModel.create({
       email,
-      password,
+      password: hashedPassword,
       fullname,
-      role: "user",
+      role: userRole,
     });
 
-    console.log(newUser);
+    const payload = { userId: newUser._id, role: newUser.role };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "4h",
+    });
+
+    const userResponse = newUser.toObject();
+    delete userResponse.password;
+
+    res.status(201).json({
+      success: true,
+      message: "Account registered",
+      token,
+      data: userResponse,
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({
-      sucess: false,
+      success: false,
       message: "Internal server error",
-      error: "Internal server error",
+    });
+  }
+};
+
+const Login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Email is required",
+      });
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Email is required",
+      });
+    }
+
+    const exists = await UserModel.findOne({ email });
+
+    if (!exists) {
+      return res
+        .status(200)
+        .json({ sucess: false, message: "Try a different email" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, exists.password);
+
+    if (!passwordMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Password or email is incorrect",
+      });
+    }
+
+    const payload = { userId: exists._id, role: exists.role };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({
+      sucess: true,
+      message: "Logged sucessfully",
+      data: {
+        token,
+      },
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
 };
 
 module.exports = {
   Register,
+  Login,
 };
