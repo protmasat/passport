@@ -13,6 +13,7 @@ const dotenv = require("dotenv").config();
 const passportRoutes = require("./routes/passport");
 const ConnectDB = require("./config/DB");
 const userRouter = require("./routes/user");
+const messagesRouter = require("./routes/messages");
 const app = express();
 
 app.disable("x-powered-by");
@@ -43,6 +44,7 @@ app.use("/api/v1/healthy", (req, res) => {
 
 app.use("/api/v1/passports", passportRoutes);
 app.use("/api/v1/auth", userRouter);
+app.use("/api/v1/messages", messagesRouter);
 
 app.use("/", (req, res) => {
   res.status(404).json({ message: "Invalid path" });
