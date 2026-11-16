@@ -14,6 +14,8 @@ const passportRoutes = require("./routes/passport");
 const ConnectDB = require("./config/DB");
 const userRouter = require("./routes/user");
 const messagesRouter = require("./routes/messages");
+const adminRouter = require("./routes/admin");
+const adminRoutes = require("./routes/adminRouter");
 const app = express();
 
 app.disable("x-powered-by");
@@ -44,7 +46,9 @@ app.use("/api/v1/healthy", (req, res) => {
 
 app.use("/api/v1/passports", passportRoutes);
 app.use("/api/v1/auth", userRouter);
+app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/messages", messagesRouter);
+app.use("/api/v1/admin", adminRoutes);
 
 app.use("/", (req, res) => {
   res.status(404).json({ message: "Invalid path" });

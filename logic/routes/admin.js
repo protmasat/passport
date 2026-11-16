@@ -20,3 +20,5 @@ adminRouter.put("/", (req, res) => {
 adminRouter.put("/", (req, res) => {
   res.status(200).json({ message: "delete passport" });
 });
+
+module.exports = adminRouter;
