@@ -11,21 +11,18 @@ const {
 
 const RequireBody = require("../middleware/requireBody");
 const ValidateId = require("../middleware/ValidateId");
+const requireAuth = require("../middleware/Auth");
 
 const ValidatePassport = require("../middleware/ValidatePassport");
 
 // create passport
-
-/**
- * @swagger
- * /api/v1/passports/:
- *  post:
- *      summary: create passport
- * responses:
- *      201:
- *        description:
- */
-passportRoutes.post("/", RequireBody, ValidatePassport, CreatePassport);
+passportRoutes.post(
+  "/",
+  requireAuth,
+  RequireBody,
+  ValidatePassport,
+  CreatePassport,
+);
 
 // read passports
 passportRoutes.get("/", GetPassports);
