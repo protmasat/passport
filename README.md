@@ -62,7 +62,6 @@ Make sure you have the following installed before running the project:
 
 With the server running, the API documentation is available at [http://localhost:3400/docs](http://localhost:3400/docs).
 
-![alt text](./assets/image.png)
 
 ## License
 
