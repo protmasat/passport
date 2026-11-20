@@ -42,7 +42,7 @@ paths:
         "200":
           description: OK
 
-  /api/v1/register:
+  /api/v1/auth/signup:
     post:
       summary: register
       responses:
@@ -56,5 +56,40 @@ paths:
         "200":
           description: Ok
 
+  /api/v1/messages:
+    get:
+      summary: List all messages requests
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: submit an inquiry
+      responses:
+        "201":
+          description: Created
+
+  /api/v1/messages/{id}:
+    put:
+      summary: Update a message status passport
+      responses:
+        "200":
+          description: Updated
+
+  /api/v1/admin/login:
+    post:
+      summary: register an admin
+      responses:
+        "201":
+          description: Ok
+
+  /api/v1/admin/register:
+    post:
+      summary: Login
+      responses:
+        "200":
+          description: Ok
+
 # auth user: login, register,
 # admin: login, register
+
+# http://localhost:3400/docs/
