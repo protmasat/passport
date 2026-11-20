@@ -1,93 +1,244 @@
-# docs/openapi.yaml
 openapi: 3.0.0
 info:
   title: Passports API
   version: 1.0.0
 
+servers:
+  - url: http://localhost:3400
+
 tags:
   - name: Auth
-    description: Login and authentication
+    description: User login, registration and logout
+  - name: Admin
+    description: Admin login and registration
   - name: Passports
     description: Passport management
+  - name: Messages
+    description: Inquiries and message requests
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    Credentials:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+    PassportInput:
+      type: object
+      required:
+        [
+          passportNumber,
+          fullName,
+          nationality,
+          dateOfBirth,
+          issueDate,
+          expiryDate,
+        ]
+      properties:
+        passportNumber: { type: string, example: "A1234567" }
+        fullName: { type: string, example: "Jane Doe" }
+        nationality: { type: string, example: "KE" }
+        dateOfBirth: { type: string, format: date }
+        issueDate: { type: string, format: date }
+        expiryDate: { type: string, format: date }
+        status:
+          type: string
+          enum: [pending, active, expired, revoked]
+          default: pending
+    Passport:
+      allOf:
+        - $ref: "#/components/schemas/PassportInput"
+        - type: object
+          required: [id, createdAt, updatedAt]
+          properties:
+            id: { type: string }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+    Error:
+      type: object
+      properties:
+        message: { type: string }
+    Registration:
+      allOf:
+        - $ref: "#/components/schemas/Credentials"
+        - type: object
+          properties:
+            name: { type: string }
+  responses:
+    Unauthorized:
+      description: Missing or invalid credentials
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: Passport not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ValidationError:
+      description: Invalid request body
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
 
 paths:
   /api/v1/passports:
     get:
+      tags: [Passports]
       summary: List all passports
+      security: [{ bearerAuth: [] }]
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Passport" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
     post:
+      tags: [Passports]
       summary: Create a passport
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PassportInput" }
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Passport" }
+        "400": { $ref: "#/components/responses/ValidationError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
 
   /api/v1/passports/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdParam"
     put:
+      tags: [Passports]
       summary: Update a passport
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PassportInput" }
       responses:
         "200":
           description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Passport" }
+        "400": { $ref: "#/components/responses/ValidationError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
     delete:
+      tags: [Passports]
       summary: Delete a passport
+      security: [{ bearerAuth: [] }]
       responses:
-        "204":
-          description: Deleted
-
-  /api/v1/auth/logout:
-    post:
-      summary: Log in
-      responses:
-        "200":
-          description: OK
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
 
   /api/v1/auth/signup:
     post:
-      summary: register
+      tags: [Auth]
+      summary: Register a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Registration" }
       responses:
-        "201":
-          description: Ok
+        "201": { description: Created }
 
   /api/v1/auth/login:
     post:
-      summary: Login
+      tags: [Auth]
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Credentials" }
       responses:
-        "200":
-          description: Ok
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
 
-  /api/v1/messages:
-    get:
-      summary: List all messages requests
-      responses:
-        "200":
-          description: OK
+  /api/v1/auth/logout:
     post:
-      summary: submit an inquiry
+      tags: [Auth]
+      summary: Log out
+      security: [{ bearerAuth: [] }]
       responses:
-        "201":
-          description: Created
-
-  /api/v1/messages/{id}:
-    put:
-      summary: Update a message status passport
-      responses:
-        "200":
-          description: Updated
-
-  /api/v1/admin/login:
-    post:
-      summary: register an admin
-      responses:
-        "201":
-          description: Ok
+        "200": { description: OK }
 
   /api/v1/admin/register:
     post:
-      summary: Login
+      tags: [Admin]
+      summary: Register an admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Registration" }
       responses:
-        "200":
-          description: Ok
+        "201": { description: Created }
+
+  /api/v1/admin/login:
+    post:
+      tags: [Admin]
+      summary: Log in an admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Credentials" }
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/messages:
+    get:
+      tags: [Messages]
+      summary: List all message requests
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: OK }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Messages]
+      summary: Submit an inquiry
+      responses:
+        "201": { description: Created }
+
+  /api/v1/messages/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdParam"
+    put:
+      tags: [Messages]
+      summary: Update a message status
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Updated }
+        "401": { $ref: "#/components/responses/Unauthorized" }
 
 # auth user: login, register,
 # admin: login, register
