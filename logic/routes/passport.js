@@ -10,8 +10,8 @@ const {
 } = require("../controller/passport");
 
 const RequireBody = require("../middleware/requireBody");
-const ValidateId = require("../middleware/ValidateId");
 const requireAuth = require("../middleware/Auth");
+const requireRole = require("../middleware/RequireRole");
 
 const ValidatePassport = require("../middleware/ValidatePassport");
 
@@ -24,16 +24,18 @@ passportRoutes.post(
   CreatePassport,
 );
 
+passportRoutes.use(requireAuth);
+
 // read passports
-passportRoutes.get("/", GetPassports);
+passportRoutes.get("/", requireRole(["admin"]), GetPassports);
 
 // get passport by idGetPassport
-passportRoutes.get("/:id", GetPassport);
+passportRoutes.get("/:id", requireRole(["admin"]), GetPassport);
 
 // update passport
-passportRoutes.put("/:id", UpdatePassport);
+passportRoutes.put("/:id", requireRole(["admin"]), UpdatePassport);
 
 // delete passport
-passportRoutes.delete("/:id", DeletePassport);
+passportRoutes.delete("/:id", requireRole(["admin"]), DeletePassport);
 
 module.exports = passportRoutes;

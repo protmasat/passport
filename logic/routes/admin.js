@@ -1,24 +1,17 @@
 const express = require("express");
-const adminRouter = express.Router();
+const { LoginAdmin, RegisterAdmin } = require("../controller/adminController");
+const requireAuth = require("../middleware/Auth");
+const requireRole = require("../middleware/RequireRole");
+const adminRoutes = express.Router();
+// login
+adminRoutes.post("/login", LoginAdmin);
 
-// create
-adminRouter.post("/", (req, res) => {
-  res.status(201).json({ message: "Added passport" });
-});
+// register
+adminRoutes.post(
+  "/register",
+  requireAuth,
+  requireRole(["admin"]),
+  RegisterAdmin,
+);
 
-// read
-adminRouter.get("/", (req, res) => {
-  res.status(200).json({ message: "get passport" });
-});
-
-// update
-adminRouter.put("/", (req, res) => {
-  res.status(200).json({ message: "update passport" });
-});
-
-// delete
-adminRouter.put("/", (req, res) => {
-  res.status(200).json({ message: "delete passport" });
-});
-
-module.exports = adminRouter;
+module.exports = adminRoutes;

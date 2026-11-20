@@ -203,6 +203,3 @@ module.exports = {
   UpdatePassport,
   DeletePassport,
 };
-
-// sucess, message, data
-// sucess, message, errors

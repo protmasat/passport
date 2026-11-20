@@ -142,8 +142,6 @@ const Login = async (req, res) => {
   }
 };
 
-// forgot password
-
 module.exports = {
   Register,
   Login,
